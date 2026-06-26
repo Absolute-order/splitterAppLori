@@ -1,0 +1,615 @@
+{
+  "app": {
+    "name": "Receipt Splitter",
+    "subtitle": "Split bills easily with friends"
+  },
+  "features": {
+    "scan": "Scan",
+    "scanDesc": "Take photos of your receipts",
+    "split": "Split Bills", 
+    "splitDesc": "Divide costs with friends",
+    "calculate": "Calculate",
+    "calculateDesc": "Know who owes what"
+  },
+  "welcome": {
+    "message": "Welcome! Let's get started",
+    "newUser": "New to Receipt Splitter?",
+    "newUserDesc": "Create an account to start splitting bills",
+    "existingUser": "Already have an account?"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signInDesc": "Welcome back! Please sign in to continue",
+    "createAccount": "Create Account",
+    "createAccountDesc": "Join us to start splitting bills with friends",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "confirmPassword": "Confirm Password",
+    "username": "Username",
+    "usernamePlaceholder": "Enter your username",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "loginError": "An error occurred during login",
+    "registerError": "An error occurred during registration"
+  },
+  "common": {
+    "welcome": "Welcome",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "continue": "Continue",
+    "back": "Back"
+  },
+  "friends": {
+    "title": "Friends",
+    "searchTab": "Search",
+    "requests": "Requests",
+    "add": "Add Friend",
+    "empty": "No friends yet. Tap + to add.",
+    "incomingSection": "Incoming requests",
+    "searchPlaceholder": "Enter User ID or Username",
+    "send": "Send request",
+    "remove": "Remove",
+    "loading": "Loading...",
+    "error": "Failed to load",
+    "common": {
+      "unknownUser": "Unknown user",
+      "error": "Something went wrong"
+    },
+    "status": {
+      "add": "Add",
+      "you": "You",
+      "friend": "Friend",
+      "requested": "Requested",
+      "incoming": "Incoming"
+    },
+    "search": {
+      "placeholder": "Enter User ID or Username",
+      "hint": "Search by User ID or Username to find someone",
+      "button": "Search",
+      "noResults": "No results found",
+      "notFound": "User not found",
+      "error": "Search failed",
+      "inviteSent": "Invite sent to {{target}}",
+      "inviteFailed": "Could not send invite"
+    },
+    "requestsScreen": {
+      "title": "Friend requests",
+      "hint": "Use Accept or Reject on each request below. Search by username or ID to add new friends.",
+      "accepted": "{{target}} was added to friends",
+      "rejected": "Request from {{target}} was rejected",
+      "acceptCta": "Accept",
+      "rejectCta": "Reject",
+      "tabOutgoing": "Outgoing",
+      "tabIncoming": "Incoming",
+      "scanInvite": "Scan invite",
+      "showMyQr": "Show my QR",
+      "emptyIncoming": "No incoming requests",
+      "emptyOutgoing": "No outgoing requests",
+      "requestedLabel": "Requested"
+    }
+  },
+  "home": {
+    "header": {
+      "greeting": "Hi, {{name}}!",
+      "friendFallback": "friend",
+      "billsCount": "Bills in period",
+      "totalAmount": "Total amount",
+      "avgParticipants": "Avg participants",
+      "lastAction": "Last action"
+    },
+    "greetingWelcome": "Welcome!",
+    "greetingWithName": "Hello",
+    "noData": "No data",
+    "loadingStats": "Loading statistics...",
+    "noActivity": "No activity",
+    "billsCreated": "Bills Created",
+    "totalAmount": "Total Amount",
+    "avgParticipants": "Avg Participants",
+    "ocrRate": "OCR Rate",
+    "manualRate": "Manual Entry",
+    "avgCreationTime": "Avg Creation Time",
+    "timeSaved": "Time Saved",
+    "analytics": "Analytics",
+    "billsOverTime": "Bills Over Time",
+    "billSources": "OCR vs Manual",
+    "dailySpending": "Spending Over Time",
+    "recentActivity": "Recent Activity",
+    "noRecentActivity": "No recent activity",
+    "quickActions": "Quick Actions",
+    "periodDesc": {
+      "day": "Today",
+      "week": "Last 7 days",
+      "month": "Current month"
+    },
+    "periodDay": "Day",
+    "periodWeek": "Week",
+    "periodMonth": "Month",
+    "analyticsTable": {
+      "totalBills": "Bills Created",
+      "ocrCount": "Recognized OCR",
+      "manualCount": "Created Manually",
+      "uniqueParticipants": "Total Participants",
+      "avgParticipants": "Avg Participants",
+      "maxParticipants": "Max in One Bill"
+    },
+    "actions": {
+      "scan": "Scan",
+      "manual": "Manual",
+      "invite": "Invite",
+      "history": "History"
+    },
+    "billSourcesChart": {
+      "ocrPct": "OCR: {{pct}}% ({{count}})",
+      "manualPct": "Manual: {{pct}}% ({{count}})"
+    },
+    "activity": {
+      "ocrImported": "Imported bill \"{{name}}\"",
+      "manualCreated": "Created bill \"{{name}}\"",
+      "friendAdded": "Added friend {{name}}"
+    },
+    "scan": {
+      "cta": "Scan receipt"
+    },
+    "manual": {
+      "cta": "Manual entry"
+    },
+    "actionsOld": {
+      "friends": "Friends",
+      "groups": "Groups"
+    },
+    "recent": {
+      "title": "Recent bills",
+      "showMore": "Show more",
+      "loading": "Loading recent bills...",
+      "empty": "No bills yet",
+      "summary": "{{date}} • {{participants}}",
+      "fallbackName": "Bill",
+      "participants": "{{count}} participants",
+      "participants_one": "{{count}} participant",
+      "participants_other": "{{count}} participants",
+      "amount": "{{currency}} {{amount}}"
+    },
+    "features": {
+      "title": "What you can do"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "status": {
+      "saved": "Saved"
+    },
+    "actions": {
+      "copy": "Copy"
+    },
+    "labels": {
+      "guest": "Guest",
+      "notAvailable": "N/A"
+    },
+    "avatar": {
+      "title": "Avatar",
+      "hint": "Uploaded avatars are delivered via our CDN and refresh instantly.",
+      "upload": "Upload from phone",
+      "uploading": "Uploading...",
+      "reset": "Reset avatar",
+      "resetting": "Resetting..."
+    },
+    "info": {
+      "title": "User information",
+      "usernameLabel": "Username",
+      "usernamePlaceholder": "Enter a new username",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Enter a new email",
+      "userId": "User ID"
+    },
+    "password": {
+      "title": "Change password",
+      "currentLabel": "Current password",
+      "currentPlaceholder": "Enter current password",
+      "newLabel": "New password",
+      "newPlaceholder": "Enter new password",
+      "confirmLabel": "Confirm new password",
+      "confirmPlaceholder": "Confirm new password",
+      "requirements": "Password must be at least 8 characters and include uppercase, lowercase, number, and special symbol.",
+      "submit": "Change password",
+      "updating": "Updating..."
+    },
+    "logout": "Log out",
+    "copy": {
+      "successTitle": "Copied",
+      "successMessage": "{{field}} copied to the clipboard.",
+      "unavailableMessage": "{{field}} is not available yet."
+    },
+    "alerts": {
+      "permissionTitle": "Permission needed",
+      "permissionMessage": "Please allow access to your photo library to pick an avatar.",
+      "unavailableTitle": "Unavailable",
+      "avatarLoginRequired": "Sign in to update your avatar.",
+      "profileLoginRequired": "Sign in to update your profile.",
+      "passwordLoginRequired": "Sign in to change your password.",
+      "avatarUpdateFailed": "Could not update the avatar.",
+      "avatarResetFailed": "Could not reset the avatar.",
+      "usernameUpdateFailed": "Could not update the username.",
+      "emailUpdateFailed": "Could not update the email.",
+      "passwordChangeFailed": "Could not change the password.",
+      "logoutFailed": "Could not log out. Please try again.",
+      "imageMissing": "Image file is missing a URI.",
+      "uploadReadFailed": "Unable to read the selected file for upload."
+    },
+    "validation": {
+      "usernameRequired": "Username cannot be empty",
+      "usernameMin": "Username must be at least 2 characters",
+      "usernameMax": "Username must be at most 15 characters",
+      "emailRequired": "Email cannot be empty",
+      "emailInvalid": "Enter a valid email address",
+      "passwordCurrent": "Enter your current password",
+      "passwordLength": "New password must be at least 8 characters",
+      "passwordComplexity": "Password must include uppercase, lowercase, number, and special character",
+      "passwordMismatch": "Passwords do not match",
+      "passwordDifferent": "Choose a different password"
+    }
+  },
+  "navigation": {
+    "mainMenu": "Main menu",
+    "historyTab": "History",
+    "tabs": {
+      "home": "Home",
+      "settings": "Settings",
+      "profile": "Profile"
+    },
+    "groups": {
+      "title": "Groups",
+      "create": "New group",
+      "details": "Group"
+    },
+    "scanInvite": "Scan Invite",
+    "friendQr": "My Friend QR",
+    "groupQr": "Group QR",
+    "scanReceipt": "Scan Receipt",
+    "manualReceipt": "Manual Entry",
+    "participants": "Participants",
+    "itemsSplit": "Items Split",
+    "finish": "Finish",
+    "history": "Recent bills",
+    "historyDetails": "Bill details",
+    "notifications": "Notifications"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications yet",
+    "markAllRead": "Mark all read",
+    "types": {
+      "friendRequest": {
+        "title": "Friend request",
+        "body": "{{actor}} sent you a friend request"
+      },
+      "sessionFinalized": {
+        "title": "Bill finalized",
+        "body": "{{actor}} finalized \"{{name}}\" — {{amount}}"
+      },
+      "debtReminder": {
+        "title": "Amount to pay",
+        "body": "You owe {{amount}} for \"{{name}}\""
+      },
+      "paymentMarked": {
+        "title": "Payment marked",
+        "body": "{{participant}} marked paid for \"{{name}}\""
+      }
+    },
+    "time": {
+      "justNow": "just now",
+      "minutesAgo": "{{count}}m ago",
+      "hoursAgo": "{{count}}h ago",
+      "daysAgo": "{{count}}d ago"
+    }
+  },
+  "scanner": {
+    "title": "Scan receipt",
+    "sessionName": "Session name",
+    "sessionNamePlaceholder": "e.g. Cafe on October",
+    "language": "Language",
+    "allowCamera": "Allow camera access",
+    "uploading": "Uploading receipt...",
+    "lastPhoto": "Last photo stored; capturing again will overwrite it.",
+    "scan": "Scan receipt",
+    "processing": "Processing...",
+    "useMock": "Use mock receipt",
+    "captureError": "Could not capture the receipt photo. Please try again.",
+    "prepareError": "Failed to prepare the receipt photo for upload.",
+    "genericError": "Something went wrong while sending the receipt"
+  },
+  "manual": {
+    "sessionName": "Bill name",
+    "sessionNamePlaceholder": "e.g. Dinner at cafe",
+    "currency": "Currency",
+    "items": "Items",
+    "addItem": "Add item",
+    "itemName": "Item name",
+    "price": "Price",
+    "quantity": "Qty",
+    "total": "Total",
+    "continue": "Continue",
+    "defaultName": "Manual bill",
+    "noItems": "Add at least one item with a name and price."
+  },
+    "history": {
+    "title": "Recent bills",
+    "subtitle": "Home",
+    "loading": "Loading...",
+    "empty": "No history yet",
+    "participants": "{{count}} participants",
+    "participants_one": "{{count}} participant",
+    "fallbackName": "Bill",
+    "export": "Export file"
+  },
+  "settings": {
+    "language": {
+      "title": "Language",
+      "description": "Choose the language used across the app.",
+      "options": {
+        "en": "English",
+        "ja": "Japanese",
+        "uz": "Uzbek"
+      }
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose a light or dark theme, or follow system settings.",
+      "options": {
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System"
+      }
+    },
+    "page": {
+      "title": "Account settings",
+      "description": "Update your username and password using the forms below.",
+      "username": "Username",
+      "usernamePlaceholder": "Enter a new username",
+      "saveUsername": "Save username",
+      "reset": "Reset",
+      "password": "Password",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "passwordHint": "Password must be at least 8 characters and include uppercase, lowercase, number, and special symbol.",
+      "changePassword": "Change password",
+      "saving": "Saving...",
+      "updating": "Updating..."
+    }
+  },
+  "groups": {
+    "title": "Groups",
+    "empty": "No groups yet. Tap + to create.",
+    "common": {
+      "untitled": "Group",
+      "owner": "Owner",
+      "member": "Member"
+    },
+    "list": {
+      "members": "{{count}} members",
+      "members_zero": "No members yet"
+    },
+    "actions": {
+      "scanInvite": "Scan invite",
+      "showQr": "Show QR",
+      "rename": "Rename",
+      "delete": "Delete",
+      "addMember": "Add member",
+      "removeMember": "Remove member"
+    },
+    "create": {
+      "title": "Create group",
+      "back": "Back to Groups",
+      "namePlaceholder": "Group name",
+      "action": "Create",
+      "emptyState": "Create a group to add members.",
+      "manageMembers": "Add or remove members",
+      "searchPlaceholder": "Search friends…",
+      "noFriends": "No friends to display",
+      "addMember": "Add member",
+      "removeMember": "Remove member",
+      "notice": {
+        "success": "Group created",
+        "error": "Failed to create group",
+        "memberAdded": "Member added",
+        "addFailed": "Failed to add member",
+        "memberRemoved": "Member removed",
+        "removeFailed": "Failed to remove member"
+      }
+    },
+    "invite": {
+      "title": "Group QR",
+      "description": "Invite to this group",
+      "new": "New QR",
+      "invalid": "Invalid group",
+      "error": "Failed to get invite"
+    },
+    "details": {
+      "members": "Members",
+      "addFriends": "Add friends",
+      "searchPlaceholder": "Search friends…",
+      "noCandidates": "No friends to add",
+      "deleteConfirm": "Delete this group?",
+      "renamePlaceholder": "Group name",
+      "startBill": "Start bill with group",
+      "startBillHint": "Members are pre-filled. Scan a receipt or enter items manually.",
+      "startBillError": "Could not start a bill for this group"
+    }
+  },
+  "sessions": {
+    "participants": {
+      "title": "Choose participants",
+      "hint": "Only selected people will receive the finalized bill and see it in history.",
+      "finalizeHint": "Notifications are sent after the bill is finalized, not at the scan step.",
+      "selectedSummary": "Selected participants",
+      "minimumHint": "Select at least two people to continue.",
+      "search": "Search…",
+      "select": "Select",
+      "selected": "Selected",
+      "next": "Next",
+      "you": "You"
+    },
+    "itemsSplit": {
+      "orders": "Orders",
+      "participants": "Participants ({{count}})",
+      "continue": "Continue",
+      "assignProgress": "Assignment progress",
+      "editBannerTitle": "Check items before splitting",
+      "editBannerHint": "Fix names, prices, or quantities after scanning.",
+      "editItem": "Edit",
+      "editModalTitle": "Edit item",
+      "itemName": "Item name",
+      "unitPrice": "Unit price",
+      "quantity": "Quantity",
+      "deleteItem": "Remove item",
+      "saveItem": "Save",
+      "saving": "Saving...",
+      "finalizeHint": "After finalizing, selected participants will get a notification and this bill will appear in their history.",
+      "participantStatus": "Participant status",
+      "assignedState": "Assigned",
+      "unassignedState": "Unassigned",
+      "assignedUnits": "{{assigned}}/{{total}} assigned",
+      "remainingUnits_one": "Assign 1 remaining unit",
+      "remainingUnits_other": "Assign {{count}} remaining units",
+      "equalAssigned": "Assigned to {{count}} participant(s)",
+      "equalSplitHint": "Price split equally:",
+      "countAssigned": "{{count}} unit(s) assigned",
+      "perUnit": "Per unit:",
+      "equalSplit": "Equal split",
+      "warikan": "Warikan",
+      "warikanSummary": "Warikan: equal split, remainder to organizer",
+      "warikanHintTitle": "Strict even split",
+      "warikanHint": "Everyone gets the same base amount. Any remainder is assigned to the organizer.",
+      "applyWarikanAll": "Split all with Warikan",
+      "byUnits": "By units",
+      "assignTo": "Assign to:",
+      "all": "All",
+      "clear": "Clear",
+      "done": "Done",
+      "successTitle": "Bill saved",
+      "who": "Who?",
+      "change": "Change"
+    },
+    "finish": {
+      "title": "Bill Summary",
+      "receipt": "Receipt #{{id}}",
+      "totalAmount": "Total Amount",
+      "splitBy": "Split by participant:",
+      "splitByItems": "Split by items:",
+      "finalize": "Finalize",
+      "finalizing": "Finalizing...",
+      "complete": "Complete settlement",
+      "noAllocation": "No allocation details available.",
+      "actionsHint": "Share the result or mark payments in history.",
+      "markPaid": "Mark paid",
+      "markedPaid": "Paid",
+      "paymentSection": "Payment status"
+    },
+    "history": {
+      "loading": "Loading…",
+      "notFound": "Bill not found",
+      "back": "Back",
+      "participantsCount": "{{count}} participants",
+      "noItems": "No items linked",
+      "itemFallback": "Item",
+      "actionsHint": "Share with friends or repeat this bill with the same people.",
+      "repeat": "Repeat bill",
+      "share": "Share",
+      "markPaid": "Mark as paid",
+      "markedPaid": "Paid",
+      "owed": "Owes {{amount}}"
+    }
+  },
+  "billFeatures": {
+    "share": {
+      "title": "Receipt Splitter",
+      "total": "Total",
+      "perPerson": "Per person",
+      "paid": "paid",
+      "unpaid": "unpaid",
+      "footer": "Shared via Receipt Splitter"
+    },
+    "repeat": {
+      "copySuffix": " (copy)",
+      "loading": "Preparing…",
+      "error": "Could not repeat this bill"
+    },
+    "debt": {
+      "title": "You owe",
+      "body": "{{amount}} for \"{{name}}\""
+    },
+    "payment": {
+      "markedTitle": "Payment marked"
+    },
+    "export": {
+      "title": "Bill history export",
+      "titleSingle": "Export this bill",
+      "titleAll": "Export all bills",
+      "button": "Export file",
+      "buttonSingle": "Export bill",
+      "hint": "Choose a format and send via mail, chat, or cloud.",
+      "exportedAt": "Exported at",
+      "bill": "Bill",
+      "date": "Date",
+      "total": "Total",
+      "participants": "Participants",
+      "participant": "Participant",
+      "amount": "Amount",
+      "status": "Status",
+      "items": "Items",
+      "itemName": "Item",
+      "itemShare": "Share",
+      "footer": "Exported from Receipt Splitter",
+      "filePrefix": "receipt-splitter",
+      "error": "Could not export file",
+      "formats": {
+        "pdf": "PDF",
+        "pdfDesc": "Best for printing and sharing. Opens in any PDF viewer.",
+        "csv": "CSV (Excel / Sheets)",
+        "csvDesc": "Spreadsheet format for Excel, Google Sheets, or Numbers.",
+        "doc": "Word (.doc)",
+        "docDesc": "Opens in Microsoft Word, Google Docs, or Pages.",
+        "txt": "Plain text",
+        "txtDesc": "Simple text file for any messenger or email."
+      }
+    },
+    "guide": {
+      "title": "How to use",
+      "subtitle": "Receipt → split → share → settle",
+      "open": "Open guide",
+      "step1Title": "1. Add receipt",
+      "step1Body": "Scan a receipt or enter items manually from Home.",
+      "step2Title": "2. Edit items (after scan)",
+      "step2Body": "On the split screen, tap Edit on any line to fix name, price, or quantity.",
+      "step3Title": "3. Assign & finish",
+      "step3Body": "Tap Who? on each item, then Continue to see each person's total.",
+      "step4Title": "4. Share result",
+      "step4Body": "On the summary screen or bill history, tap Share to send amounts via chat.",
+      "step5Title": "5. Debt reminders",
+      "step5Body": "After finalize, participants receive a notification with their amount owed.",
+      "step6Title": "6. Mark paid",
+      "step6Body": "On bill details, tap Mark as paid when someone has paid you.",
+      "step7Title": "7. Repeat bill",
+      "step7Body": "Use Repeat bill to start again with the same people and items.",
+      "step8Title": "8. Groups",
+      "step8Body": "In a group, tap Start bill with group to pre-fill members.",
+      "step9Title": "9. Export history",
+      "step9Body": "On bill history, tap Export file — choose PDF, CSV, Word, or text and send."
+    }
+  },
+  "inviteScan": {
+    "title": "Scan invite",
+    "allowCamera": "Allow camera access",
+    "connecting": "Connecting…",
+    "error": "Invalid or expired QR code",
+    "friendAccepted": "Friend invite accepted",
+    "groupAccepted": "Group invite accepted",
+    "status": "Status: {{status}}"
+  }
+}
