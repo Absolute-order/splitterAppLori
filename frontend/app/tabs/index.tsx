@@ -567,32 +567,7 @@ export default function HomeScreen() {
       showsVerticalScrollIndicator={false}
     >
       {/* ── 1. GREETING HEADER ─────────────────────────────── */}
-      <YStack px="$4" pt="$4" pb="$2" gap="$3" mt={insets.top}>
-        <Text fontSize={24} fontWeight="800" color="$color">
-          {greeting}
-        </Text>
-        <YStack
-          bg="$backgroundPress"
-          p="$3"
-          borderRadius={12}
-          borderWidth={1}
-          borderColor="$gray5"
-          gap="$1.5"
-        >
-          <Text fontSize={13} color="$gray10">
-            {t('home.header.billsCount', 'Bills in period')}: <Text fontWeight="700" color="$color">{totalBills}</Text>
-          </Text>
-          <Text fontSize={13} color="$gray10">
-            {t('home.header.totalAmount', 'Total amount')}: <Text fontWeight="700" color="$primary">{formatCurrencyAmount(totalAmount, preferredCurrency)}</Text>
-          </Text>
-          <Text fontSize={13} color="$gray10">
-            {t('home.header.avgParticipants', 'Avg participants')}: <Text fontWeight="700" color="$color">{avgParticipants.toFixed(1)}</Text>
-          </Text>
-          <Text fontSize={13} color="$gray10" numberOfLines={1}>
-            {t('home.header.lastAction', 'Last action')}: <Text fontWeight="700" color="$color">{lastActivity[0] ? getActivityText(lastActivity[0]) : t('home.noActivity', 'No activity')}</Text>
-          </Text>
-        </YStack>
-      </YStack>
+
 
       {/* ── 2. PERIOD SWITCHER ─────────────────────────────── */}
       <YStack px="$4" pt="$2" pb="$2" gap="$2">
@@ -629,12 +604,6 @@ export default function HomeScreen() {
 
       {/* ── 3. STAT CARDS ──────────────────────────────────── */}
       <XStack flexWrap="wrap" gap="$3" px="$4" pt="$2">
-        <StatCard
-          icon={<Receipt size={16} color="#2ECC71" />}
-          iconBg="rgba(46,204,113,0.15)"
-          value={String(totalBills)}
-          label={t('home.billsCreated', 'Bills Created')}
-        />
         <StatCard
           icon={<TrendingUp size={16} color="#3498DB" />}
           iconBg="rgba(52,152,219,0.15)"
@@ -716,14 +685,6 @@ export default function HomeScreen() {
 
       {/* ── 5. CHARTS ───────────────────────────────────────── */}
       <YStack px="$4" pt="$4" gap="$3">
-        <ChartCard title={t('home.billsOverTime', 'Bills Over Time')}>
-          <LineChart data={billsPerDay} />
-        </ChartCard>
-
-        <ChartCard title={t('home.billSources', 'OCR vs Manual')}>
-          <PieChart ocr={ocrCount} manual={manualCount} />
-        </ChartCard>
-
         <ChartCard title={t('home.dailySpending', 'Spending Over Time')}>
           <BarChartComponent data={dailyAmounts} />
         </ChartCard>

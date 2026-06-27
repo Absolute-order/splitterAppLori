@@ -277,7 +277,8 @@
     "history": "So'nggi hisoblar",
     "historyDetails": "Hisob tafsilotlari",
     "manualReceipt": "Qo'lda kiritish",
-    "notifications": "Bildirishnomalar"
+    "notifications": "Bildirishnomalar",
+    "payments": "To'lovlar"
   },
   "notifications": {
     "title": "Bildirishnomalar",

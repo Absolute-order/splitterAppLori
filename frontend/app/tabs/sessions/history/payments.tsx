@@ -1,18 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Share, Alert } from 'react-native';
+import { Alert } from 'react-native';
 import { YStack, XStack, Text, ScrollView, Button, Spinner } from 'tamagui';
-import { Check, ChevronLeft, FileDown } from '@tamagui/lucide-icons';
+import { Check } from '@tamagui/lucide-icons';
 import { useTranslation } from 'react-i18next';
 
 import UserAvatar from '@/shared/ui/UserAvatar';
 import { useSessionsHistoryStore } from '@/features/sessions/model/history.store';
-import { SessionActionsBar } from '@/features/sessions/ui/SessionActionsBar';
-import { ExportHistoryModal } from '@/features/sessions/ui/ExportHistoryModal';
-import {
-  buildShareTextFromHistory,
-} from '@/features/sessions/lib/share-summary';
-import { replaySessionFromHistory } from '@/features/sessions/lib/replay-session';
 import { DEFAULT_CURRENCY, formatCurrencyAmount } from '@/shared/lib/currency';
 import type {
   SessionHistoryEntry,
@@ -106,7 +100,7 @@ const buildParticipantsView = (
   });
 };
 
-export default function HistoryDetailsScreen() {
+export default function PaymentsScreen() {
   const { historyId } = useLocalSearchParams<{ historyId: string }>();
   const router = useRouter();
   const { t, i18n } = useTranslation();
@@ -114,13 +108,10 @@ export default function HistoryDetailsScreen() {
   const loading = useSessionsHistoryStore((state) => state.loading);
   const initialized = useSessionsHistoryStore((state) => state.initialized);
   const currentLimit = useSessionsHistoryStore((state) => state.limit);
-  const error = useSessionsHistoryStore((state) => state.error);
   const fetchHistory = useSessionsHistoryStore((state) => state.fetchHistory);
   const patchPaymentStatus = useSessionsHistoryStore((state) => state.patchPaymentStatus);
 
-  const [busy, setBusy] = useState<'share' | 'repeat' | null>(null);
   const [paymentBusyId, setPaymentBusyId] = useState<string | null>(null);
-  const [exportOpen, setExportOpen] = useState(false);
 
   const bill: SessionHistoryEntry | undefined = useMemo(() => {
     if (!historyId) return undefined;
@@ -155,58 +146,18 @@ export default function HistoryDetailsScreen() {
     [bill, paymentStatus, t]
   );
 
-  const shareLabels = useMemo(
-    () => ({
-      title: t('billFeatures.share.title', 'Receipt Splitter'),
-      total: t('billFeatures.share.total', 'Total'),
-      perPerson: t('billFeatures.share.perPerson', 'Per person'),
-      paid: t('billFeatures.share.paid', 'paid'),
-      unpaid: t('billFeatures.share.unpaid', 'unpaid'),
-      footer: t('billFeatures.share.footer', 'Shared via Receipt Splitter'),
-    }),
-    [t]
-  );
-
-  const onShare = useCallback(async () => {
-    if (!bill) return;
-    setBusy('share');
-    try {
-      const message = buildShareTextFromHistory(bill, shareLabels);
-      await Share.share({ message });
-    } finally {
-      setBusy(null);
-    }
-  }, [bill, shareLabels]);
-
-  const onRepeat = useCallback(async () => {
-    if (!bill) return;
-    setBusy('repeat');
-    try {
-      await replaySessionFromHistory(bill, {
-        sessionNameSuffix: t('billFeatures.repeat.copySuffix', ' (copy)'),
-      });
-      router.push({
-        pathname: '/tabs/sessions/items-split',
-        params: { receiptId: String(bill.sessionId) },
-      });
-    } catch {
-      Alert.alert(
-        t('common.error', 'Error'),
-        t('billFeatures.repeat.error', 'Could not repeat this bill')
-      );
-    } finally {
-      setBusy(null);
-    }
-  }, [bill, router, t]);
-
   const onTogglePaid = useCallback(
-    async (participantUniqueId: string, nextPaid: boolean) => {
+    async (participantUniqueId: string, paidValue: boolean) => {
       if (!bill) return;
       setPaymentBusyId(participantUniqueId);
       try {
-        await patchPaymentStatus(bill.sessionId, participantUniqueId, nextPaid);
-      } catch {
-        Alert.alert(t('common.error', 'Error'), t('common.error', 'Error'));
+        await patchPaymentStatus(bill.sessionId, participantUniqueId, paidValue);
+      } catch (err) {
+        console.error('Failed to patch payment status:', err);
+        Alert.alert(
+          t('common.error', 'Error'),
+          t('sessions.history.patchPaymentFailed', 'Could not update payment status.')
+        );
       } finally {
         setPaymentBusyId(null);
       }
@@ -214,43 +165,19 @@ export default function HistoryDetailsScreen() {
     [bill, patchPaymentStatus, t]
   );
 
-  if (!bill && loading) {
+  if (!bill) {
     return (
       <YStack f={1} bg="$background" ai="center" jc="center">
         <Spinner size="large" color="$primary" />
-        <Text mt="$2" fontSize={14} color="$gray10">
-          {t('sessions.history.loading', 'Loading…')}
-        </Text>
-      </YStack>
-    );
-  }
-
-  if (!bill) {
-    return (
-      <YStack f={1} bg="$background" ai="center" jc="center" gap="$3" px="$4">
-        <Text fontSize={16} fontWeight="600">
-          {t('sessions.history.notFound', 'Bill not found')}
-        </Text>
-        {error ? (
-          <Text fontSize={14} color="$red10">
-            {error}
-          </Text>
-        ) : null}
-        <Button onPress={() => router.back()}>
-          {t('sessions.history.back', 'Back')}
-        </Button>
       </YStack>
     );
   }
 
   return (
-    <YStack f={1} bg="$background" px="$4" pt="$4" pb="$4" position="relative">
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ alignItems: 'center', paddingBottom: 32, gap: 16 }}
-      >
-        <YStack w={358} gap="$3">
-          <Text fontSize={24} fontWeight="700" color="$color">
+    <YStack f={1} bg="$background">
+      <ScrollView contentContainerStyle={{ padding: 16, alignItems: 'center', gap: 16 }}>
+        <YStack ai="center" gap="$2" w="100%" pb="$2">
+          <Text fontSize={22} fontWeight="800" color="$color" textAlign="center">
             {bill.sessionName || t('home.recent.fallbackName', 'Bill')}
           </Text>
           <Text fontSize={14} color="$gray10">
@@ -264,38 +191,6 @@ export default function HistoryDetailsScreen() {
           <Text fontSize={18} fontWeight="700" color="$primary">
             {fmtCurrency(bill.grandTotal ?? 0, currency)}
           </Text>
-
-          <SessionActionsBar
-            shareLabel={t('sessions.history.share', 'Share')}
-            repeatLabel={t('sessions.history.repeat', 'Repeat bill')}
-            hint={t(
-              'sessions.history.actionsHint',
-              'Share with friends or repeat this bill with the same people.'
-            )}
-            onShare={onShare}
-            onRepeat={onRepeat}
-            busy={busy}
-          />
-
-          <Button
-            unstyled
-            h={40}
-            borderRadius={10}
-            borderWidth={1}
-            borderColor="$gray6"
-            bg="$backgroundPress"
-            ai="center"
-            jc="center"
-            onPress={() => setExportOpen(true)}
-            pressStyle={{ opacity: 0.9 }}
-          >
-            <XStack ai="center" gap="$2">
-              <FileDown size={18} color="$gray11" />
-              <Text fontSize={14} fontWeight="700" color="$color">
-                {t('billFeatures.export.buttonSingle', 'Export bill')}
-              </Text>
-            </XStack>
-          </Button>
         </YStack>
 
         {participants.map(({ participant, avatarUrl, amount, paid, items }) => (
@@ -303,7 +198,7 @@ export default function HistoryDetailsScreen() {
             key={participant.uniqueId}
             w={358}
             borderWidth={1}
-            borderColor="$gray5"
+            borderColor={paid ? '$green8' : '$primary'}
             br={12}
             bg="$background"
             px={16}
@@ -323,6 +218,21 @@ export default function HistoryDetailsScreen() {
                   <Text fontSize={16} fontWeight="600" numberOfLines={1}>
                     {participant.username}
                   </Text>
+                  {paid ? (
+                    <XStack ai="center" gap="$1">
+                      <Check size={14} color="$green10" />
+                      <Text fontSize={12} color="$green10" fontWeight="600">
+                        {t('sessions.history.markedPaid', 'Paid')}
+                      </Text>
+                    </XStack>
+                  ) : amount > 0 ? (
+                    <Text fontSize={12} color="$orange10">
+                      {t('sessions.history.owed', {
+                        amount: fmtCurrency(amount, currency),
+                        defaultValue: 'Owes {{amount}}',
+                      })}
+                    </Text>
+                  ) : null}
                 </YStack>
               </XStack>
               <Text fontSize={16} fontWeight="700" color="$primary">
@@ -348,18 +258,30 @@ export default function HistoryDetailsScreen() {
                 </Text>
               )}
             </YStack>
+
+            {bill.isCreator && !paid && participant.uniqueId !== bill.creatorUniqueId ? (
+              <Button
+                unstyled
+                h={36}
+                borderRadius={8}
+                borderWidth={1}
+                borderColor="$primary"
+                bg="$primary"
+                ai="center"
+                jc="center"
+                onPress={() => onTogglePaid(participant.uniqueId, true)}
+                disabled={paymentBusyId === participant.uniqueId}
+                opacity={paymentBusyId === participant.uniqueId ? 0.6 : 1}
+                pressStyle={{ opacity: 0.9 }}
+              >
+                <Text fontSize={14} fontWeight="600" color="white">
+                  {t('sessions.history.markPaid', 'Mark as paid')}
+                </Text>
+              </Button>
+            ) : null}
           </YStack>
         ))}
       </ScrollView>
-
-      {bill ? (
-        <ExportHistoryModal
-          visible={exportOpen}
-          onClose={() => setExportOpen(false)}
-          entries={[bill]}
-          scope="single"
-        />
-      ) : null}
     </YStack>
   );
 }

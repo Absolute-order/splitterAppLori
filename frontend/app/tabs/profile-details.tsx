@@ -3,23 +3,23 @@ import { Alert, Animated, KeyboardAvoidingView, Platform, ScrollView, TextInputP
 import { useRouter } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
 import * as ImagePicker from 'expo-image-picker';
-import { YStack, XStack, Text, Button, Separator, Spinner } from 'tamagui';
-import { Copy, LogOut, Upload, RotateCcw, CheckCircle, User as UserIcon, Mail, Lock, Edit3, X, Check, Languages } from '@tamagui/lucide-icons';
+import { YStack, XStack, Text, Button, Separator, Spinner, View } from 'tamagui';
+import { Copy, LogOut, Upload, RotateCcw, CheckCircle, User as UserIcon, Mail, Edit3, X, Check, Languages } from '@tamagui/lucide-icons';
 import { ThemedSafeArea } from '@/shared/ui/ThemedSafeArea';
 import { useTranslation } from 'react-i18next';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 import UserAvatar from '@/shared/ui/UserAvatar';
 import Input from '@/shared/ui/Input';
-import PasswordInput from '@/shared/ui/PasswordInput';
+import BottomSheet from '@/shared/ui/BottomSheet';
 import { useAppStore } from '@/shared/lib/stores/app-store';
-import { changePassword, resetAvatar, updateEmail, updateUsername, uploadAvatar } from '@/features/auth/api';
+import { resetAvatar, updateEmail, updateUsername, uploadAvatar } from '@/features/auth/api';
 import { type LanguageCode } from '@/shared/config/languages';
 
 type SuccessKey = 'avatar' | 'password';
 type StatusState = 'idle' | 'saving' | 'success';
 
 const PICKER_OPTIONS: ImagePicker.ImagePickerOptions = {
-  mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  mediaTypes: 'images',
   allowsEditing: true,
   aspect: [1, 1],
   quality: 0.9,
@@ -293,19 +293,7 @@ export default function ProfileDetailsScreen() {
   const emailLabel = t('profile.info.emailLabel', 'Email');
   const emailPlaceholder = t('profile.info.emailPlaceholder', 'Enter a new email');
   const userIdLabel = t('profile.info.userId', 'User ID');
-  const passwordTitle = t('profile.password.title', 'Change password');
-  const currentPasswordLabel = t('profile.password.currentLabel', 'Current password');
-  const currentPasswordPlaceholder = t('profile.password.currentPlaceholder', 'Enter current password');
-  const newPasswordLabel = t('profile.password.newLabel', 'New password');
-  const newPasswordPlaceholder = t('profile.password.newPlaceholder', 'Enter new password');
-  const confirmPasswordLabel = t('profile.password.confirmLabel', 'Confirm new password');
-  const confirmPasswordPlaceholder = t('profile.password.confirmPlaceholder', 'Confirm new password');
-  const passwordRequirements = t(
-    'profile.password.requirements',
-    'Password must be at least 8 characters and include uppercase, lowercase, number, and special symbol.'
-  );
-  const passwordSubmitLabel = t('profile.password.submit', 'Change password');
-  const passwordUpdatingLabel = t('profile.password.updating', 'Updating...');
+
   const logoutLabel = t('profile.logout', 'Log out');
 
   const displayName = user?.username || guestLabel;
@@ -331,11 +319,9 @@ export default function ProfileDetailsScreen() {
   const [emailError, setEmailError] = useState<string | null>(null);
   const emailResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordError, setPasswordError] = useState<string | null>(null);
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
+
+
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
 
   const [mediaPermission, requestMediaPermission] = ImagePicker.useMediaLibraryPermissions();
 
@@ -387,33 +373,6 @@ export default function ProfileDetailsScreen() {
     },
     [t]
   );
-
-  const validatePasswordForm = useCallback(() => {
-    if (!currentPassword.trim()) {
-      return t('profile.validation.passwordCurrent', 'Enter your current password');
-    }
-    if (newPassword.length < 8) {
-      return t('profile.validation.passwordLength', 'New password must be at least 8 characters');
-    }
-    const hasUppercase = /[A-Z]/.test(newPassword);
-    const hasLowercase = /[a-z]/.test(newPassword);
-    const hasNumber = /\d/.test(newPassword);
-    const hasSymbol = /[^A-Za-z0-9\s]/.test(newPassword);
-    if (!hasUppercase || !hasLowercase || !hasNumber || !hasSymbol) {
-      return t(
-        'profile.validation.passwordComplexity',
-        'Password must include uppercase, lowercase, number, and special character'
-      );
-    }
-    if (newPassword !== confirmPassword) {
-      return t('profile.validation.passwordMismatch', 'Passwords do not match');
-    }
-    if (newPassword === currentPassword) {
-      return t('profile.validation.passwordDifferent', 'Choose a different password');
-    }
-    return null;
-  }, [confirmPassword, currentPassword, newPassword, t]);
-
   useEffect(() => {
     if (usernameError) {
       const error = validateUsername(usernameDraft);
@@ -427,13 +386,6 @@ export default function ProfileDetailsScreen() {
       if (!error) setEmailError(null);
     }
   }, [emailDraft, emailError, validateEmail]);
-
-  useEffect(() => {
-    if (passwordError) {
-      const error = validatePasswordForm();
-      if (!error) setPasswordError(null);
-    }
-  }, [passwordError, validatePasswordForm]);
 
   const ensureMediaPermission = useCallback(async () => {
     if (mediaPermission?.granted) return true;
@@ -648,49 +600,14 @@ export default function ProfileDetailsScreen() {
     }
   }, [emailDraft, setUser, t, user, validateEmail]);
 
-  const handleChangePassword = useCallback(async () => {
-    if (!user) {
-      Alert.alert(
-        t('profile.alerts.unavailableTitle', 'Unavailable'),
-        t('profile.alerts.passwordLoginRequired', 'Sign in to change your password.')
-      );
-      return;
-    }
 
-    const error = validatePasswordForm();
-    if (error) {
-      setPasswordError(error);
-      return;
-    }
-    setPasswordError(null);
-
-    try {
-      setIsChangingPassword(true);
-      await changePassword({ currentPassword, newPassword });
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-      triggerSuccess('password');
-    } catch (err) {
-      console.error('Password change failed:', err);
-      const fallback = t('profile.alerts.passwordChangeFailed', 'Could not change the password.');
-      const message = err instanceof Error && err.message ? err.message : fallback;
-      Alert.alert(t('common.error', 'Error'), message);
-    } finally {
-      setIsChangingPassword(false);
-    }
-  }, [
-    changePassword,
-    confirmPassword,
-    currentPassword,
-    newPassword,
-    t,
-    triggerSuccess,
-    user,
-    validatePasswordForm,
-  ]);
 
   const handleLogout = useCallback(() => {
+    setLogoutModalOpen(true);
+  }, []);
+
+  const handleConfirmLogout = useCallback(() => {
+    setLogoutModalOpen(false);
     logout()
       .then(() => router.replace({ pathname: '/' }))
       .catch(() =>
@@ -809,49 +726,6 @@ export default function ProfileDetailsScreen() {
                 />
               </SectionCard>
 
-              {/* Password */}
-              <SectionCard
-                title={passwordTitle}
-                icon={<Lock size={18} color="$gray11" />}
-                successTrigger={successCounters.password}
-              >
-                <YStack gap="$3">
-                  <PasswordInput
-                    label={currentPasswordLabel}
-                    value={currentPassword}
-                    onChangeText={setCurrentPassword}
-                    placeholder={currentPasswordPlaceholder}
-                    textInputProps={{ returnKeyType: 'next' }}
-                  />
-                  <PasswordInput
-                    label={newPasswordLabel}
-                    value={newPassword}
-                    onChangeText={setNewPassword}
-                    placeholder={newPasswordPlaceholder}
-                    textInputProps={{ returnKeyType: 'next' }}
-                  />
-                  <Text fontSize={12} color="$gray10">
-                    {passwordRequirements}
-                  </Text>
-                  <PasswordInput
-                    label={confirmPasswordLabel}
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    placeholder={confirmPasswordPlaceholder}
-                    error={passwordError || undefined}
-                    textInputProps={{ returnKeyType: 'done' }}
-                  />
-                  <Button
-                    size="$3"
-                    bg="$green9"
-                    color="white"
-                    disabled={isChangingPassword}
-                    onPress={handleChangePassword}
-                  >
-                    {isChangingPassword ? passwordUpdatingLabel : passwordSubmitLabel}
-                  </Button>
-                </YStack>
-              </SectionCard>
 
               {/* Logout */}
               <Button
@@ -870,6 +744,61 @@ export default function ProfileDetailsScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
 
+      {/* Logout Confirmation BottomSheet */}
+      <BottomSheet
+        visible={logoutModalOpen}
+        onClose={() => setLogoutModalOpen(false)}
+      >
+        <YStack gap="$4" py="$2" ai="center">
+          {/* A beautiful circular icon container */}
+          <View
+            w={64}
+            h={64}
+            br={32}
+            bg="$red3"
+            ai="center"
+            jc="center"
+          >
+            <LogOut size={28} color="$red10" />
+          </View>
+
+          <YStack gap="$2" ai="center" px="$2">
+            <Text fontSize={18} fontWeight="700" color="$color" textAlign="center">
+              {t('profile.alerts.logoutConfirmTitle', 'Confirm Log Out')}
+            </Text>
+            <Text fontSize={14} color="$gray10" textAlign="center">
+              {t('profile.alerts.logoutConfirmMessage', 'Are you sure you want to log out of your account?')}
+            </Text>
+          </YStack>
+
+          <XStack gap="$3" w="100%" mt="$2">
+            <Button
+              flex={1}
+              h={48}
+              br={12}
+              bg="$gray3"
+              pressStyle={{ bg: '$gray4' }}
+              onPress={() => setLogoutModalOpen(false)}
+            >
+              <Text fontSize={15} fontWeight="600" color="$gray11">
+                {t('common.cancel', 'Cancel')}
+              </Text>
+            </Button>
+            <Button
+              flex={1}
+              h={48}
+              br={12}
+              bg="$red9"
+              pressStyle={{ bg: '$red10' }}
+              onPress={handleConfirmLogout}
+            >
+              <Text fontSize={15} fontWeight="600" color="white">
+                {t('profile.logout', 'Log out')}
+              </Text>
+            </Button>
+          </XStack>
+        </YStack>
+      </BottomSheet>
     </ThemedSafeArea>
   );
 }

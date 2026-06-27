@@ -1,8 +1,8 @@
 // app/tabs/_layout.tsx
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { Tabs, useRouter } from 'expo-router';
-import { Pressable, useColorScheme, Modal } from 'react-native';
+import { Pressable, useColorScheme, Modal, Animated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { YStack, XStack, Text, View, Theme, Button } from 'tamagui';
 import { Home, Settings, Bell, ChevronLeft, Sun, Moon, History, User, Plus, ScanLine, PenLine, Users } from '@tamagui/lucide-icons';
@@ -32,6 +32,24 @@ function DotBadge({ value }: { value?: number }) {
   );
 }
 
+const PARENT_ROUTE_MAP: Record<string, string> = {
+  'profile-details': '/tabs/profile',
+  'notifications': '/tabs',
+  'sessions/history/[historyId]': '/tabs/sessions/history',
+  'sessions/history/payments': '/tabs/notifications',
+  'groups/[groupId]': '/tabs/groups',
+  'friends/search': '/tabs/friends',
+  'groups/create': '/tabs/groups',
+  'scan-invite': '/tabs',
+  'groups/invite': '/tabs/groups',
+  'scan-receipt': '/tabs',
+  'manual-receipt': '/tabs',
+  'features-guide': '/tabs',
+  'sessions/participants': '/tabs',
+  'sessions/items-split': '/tabs',
+  'sessions/finish': '/tabs',
+};
+
 // --- Global Header for all Tabs ---
 // FIX: ранее здесь были useEffect + useFocusEffect + AppState.addEventListener,
 // которые вызывали fetchAll() (загрузку списка друзей и запросов) при каждом
@@ -46,19 +64,7 @@ function GlobalTabsHeader(props: any) {
   const { user } = useAppStore();
   const { t } = useTranslation();
   const routeName = props?.route?.name ?? '';
-  const showHomeShortcut =
-    routeName !== 'profile' &&
-    routeName !== 'sessions/history/index' &&
-    routeName !== 'friends/index' &&
-    routeName !== 'notifications' &&
-    routeName !== 'profile-details' &&
-    (routeName.startsWith('friends') ||
-      routeName.startsWith('groups') ||
-      routeName.startsWith('sessions'));
-
-  const showBackButton =
-    routeName === 'notifications' ||
-    routeName === 'profile-details';
+  const showBackButton = !['index', 'sessions/history/index', 'friends/index', 'profile'].includes(routeName);
 
   const showProfileButton =
     routeName !== 'profile' &&
@@ -71,8 +77,18 @@ function GlobalTabsHeader(props: any) {
     routeName !== 'notifications' &&
     routeName !== 'profile-details';
 
-  const onBackToHome = () => router.replace({ pathname: '/tabs' });
-  const onBack = () => router.back();
+  const showNotificationButton = routeName === 'index';
+
+  const onBack = () => {
+    const parentRoute = PARENT_ROUTE_MAP[routeName];
+    if (parentRoute) {
+      router.replace(parentRoute as any);
+    } else if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/tabs');
+    }
+  };
 
   const requestsCount = useFriendsStore((s) => s.requestsRaw?.incoming?.length ?? 0);
   const notifUnread = useNotificationsStore((s) => s.unreadCount);
@@ -91,23 +107,10 @@ function GlobalTabsHeader(props: any) {
     <YStack bg="$background" pt={insets.top}>
       <XStack h={50} ai="center" jc="space-between" px="$4">
         <XStack ai="center" gap="$2" f={1} flexShrink={1}>
-          {showHomeShortcut && (
-            <Pressable onPress={onBackToHome} hitSlop={10}>
-              <XStack ai="center" gap="$1">
-                <ChevronLeft size={20} color="$gray11" />
-                <Text fontSize={14} color="$gray11">
-                  {t('navigation.mainMenu', 'Main menu')}
-                </Text>
-              </XStack>
-            </Pressable>
-          )}
           {showBackButton && (
             <Pressable onPress={onBack} hitSlop={10}>
-              <XStack ai="center" gap="$1">
-                <ChevronLeft size={20} color="$gray11" />
-                <Text fontSize={14} color="$gray11">
-                  {t('common.back', 'Back')}
-                </Text>
+              <XStack ai="center" p="$1">
+                <ChevronLeft size={26} color="$gray11" />
               </XStack>
             </Pressable>
           )}
@@ -118,12 +121,14 @@ function GlobalTabsHeader(props: any) {
 
         {showRightIcons && (
           <XStack ai="center" gap="$3" flexShrink={0}>
-            <Pressable onPress={() => router.push('/tabs/notifications')}>
-              <View>
-                <Bell size={22} color="$gray11" />
-                <DotBadge value={badgeTotal} />
-              </View>
-            </Pressable>
+            {showNotificationButton && (
+              <Pressable onPress={() => router.push('/tabs/notifications')}>
+                <View>
+                  <Bell size={22} color="$gray11" />
+                  <DotBadge value={badgeTotal} />
+                </View>
+              </Pressable>
+            )}
 
             {showProfileButton && (
               <Pressable onPress={handleOpenProfile} hitSlop={10}>
@@ -155,78 +160,95 @@ function CustomTabBar({ state, onAddPress }: any) {
   if (!isMainScreen) return null;
 
   return (
-    <View
-      position="absolute"
-      bottom={insets.bottom > 0 ? insets.bottom + 8 : 16}
-      left={16}
-      right={16}
-      height={64}
-      borderRadius={32}
-      backgroundColor="$backgroundStrong"
-      borderWidth={isDark ? 1 : 0}
-      borderColor={isDark ? "$gray5" : "transparent"}
-      shadowColor="$gray8"
-      shadowOffset={{ width: 0, height: 4 }}
-      shadowOpacity={0.06}
-      shadowRadius={8}
-      style={{ elevation: 3 } as any}
-      flexDirection="row"
-      alignItems="center"
-      justifyContent="space-between"
-      paddingHorizontal="$3"
-      zIndex={100}
-    >
-      {/* Item 0: Home */}
-      <TabBarItem
-        label={t('navigation.tabs.home', 'Home')}
-        active={currentRouteName === 'index'}
-        icon={<Home size={20} />}
-        onPress={() => router.push('/tabs')}
-      />
-
-      {/* Item 1: History */}
-      <TabBarItem
-        label={t('navigation.historyTab', 'History')}
-        active={currentRouteName === 'sessions/history/index'}
-        icon={<History size={20} />}
-        onPress={() => router.push('/tabs/sessions/history')}
-      />
-
-      {/* Item 2: Central Add/Scan Button */}
+    <>
       <View
-        onPress={onAddPress}
-        width={48}
-        height={48}
-        borderRadius={24}
-        backgroundColor="$primary"
-        alignItems="center"
-        justifyContent="center"
-        shadowColor="$primary"
+        position="absolute"
+        bottom={insets.bottom > 0 ? insets.bottom + 8 : 16}
+        left={16}
+        right={16}
+        height={64}
+        borderRadius={32}
+        backgroundColor={isDark ? '#121212' : '#ffffff'}
+        borderWidth={1}
+        borderColor="$gray5"
+        shadowColor="$gray8"
         shadowOffset={{ width: 0, height: 4 }}
-        shadowOpacity={0.3}
-        shadowRadius={6}
-        style={{ elevation: 4 } as any}
-        pressStyle={{ scale: 0.92, opacity: 0.9 }}
+        shadowOpacity={0.06}
+        shadowRadius={8}
+        style={{ elevation: 3 } as any}
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-between"
+        paddingHorizontal="$3"
+        zIndex={100}
       >
-        <Plus size={24} color="white" />
+        {/* Item 0: Home */}
+        <TabBarItem
+          label={t('navigation.tabs.home', 'Home')}
+          active={currentRouteName === 'index'}
+          icon={<Home size={20} />}
+          onPress={() => router.push('/tabs')}
+        />
+
+        {/* Item 1: History */}
+        <TabBarItem
+          label={t('navigation.historyTab', 'History')}
+          active={currentRouteName === 'sessions/history/index'}
+          icon={<History size={20} />}
+          onPress={() => router.push('/tabs/sessions/history')}
+        />
+
+        {/* Item 2: Central Add/Scan Button */}
+        <View
+          onPress={onAddPress}
+          width={48}
+          height={48}
+          borderRadius={24}
+          backgroundColor="$primary"
+          alignItems="center"
+          justifyContent="center"
+          shadowColor="$primary"
+          shadowOffset={{ width: 0, height: 4 }}
+          shadowOpacity={0.3}
+          shadowRadius={6}
+          style={{ elevation: 4 } as any}
+          pressStyle={{ scale: 0.92, opacity: 0.9 }}
+        >
+          <Plus size={24} color="white" />
+        </View>
+
+        {/* Item 3: Friends */}
+        <TabBarItem
+          label={t('friends.title', 'Friends')}
+          active={currentRouteName === 'friends/index'}
+          icon={<Users size={20} />}
+          onPress={() => router.push('/tabs/friends')}
+        />
+
+        {/* Item 4: Profile */}
+        <TabBarItem
+          label={t('profile.title', 'Profile')}
+          active={currentRouteName === 'profile'}
+          icon={<User size={20} />}
+          onPress={() => router.push('/tabs/profile')}
+        />
       </View>
 
-      {/* Item 3: Friends */}
-      <TabBarItem
-        label={t('friends.title', 'Friends')}
-        active={currentRouteName === 'friends/index'}
-        icon={<Users size={20} />}
-        onPress={() => router.push('/tabs/friends')}
-      />
-
-      {/* Item 4: Profile */}
-      <TabBarItem
-        label={t('profile.title', 'Profile')}
-        active={currentRouteName === 'profile'}
-        icon={<User size={20} />}
-        onPress={() => router.push('/tabs/profile')}
-      />
-    </View>
+      {/* Solid background for the system bottom navigation bar area — adapts to theme */}
+      {insets.bottom > 0 && (
+        <View
+          position="absolute"
+          bottom={0}
+          left={0}
+          right={0}
+          height={insets.bottom}
+          backgroundColor={isDark ? '#121212' : '#ffffff'}
+          borderTopWidth={1}
+          borderTopColor={isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'}
+          zIndex={90}
+        />
+      )}
+    </>
   );
 }
 
@@ -265,6 +287,19 @@ export default function TabLayout() {
 
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const slideAnim = useRef(new Animated.Value(400)).current;
+
+  useEffect(() => {
+    if (createModalOpen) {
+      slideAnim.setValue(400);
+      Animated.spring(slideAnim, {
+        toValue: 0,
+        useNativeDriver: true,
+        tension: 65,
+        friction: 9,
+      }).start();
+    }
+  }, [createModalOpen, slideAnim]);
 
   useEffect(() => {
     const poll = () => useNotificationsStore.getState().fetchUnreadCount();
@@ -273,7 +308,9 @@ export default function TabLayout() {
     return () => clearInterval(interval);
   }, []);
 
-  const homeTitle = user?.username || t('navigation.tabs.home', 'Home');
+  const homeTitle = user?.username
+    ? `${t('home.greetingWithName', 'Salom')} ${user.username}`
+    : t('navigation.tabs.home', 'Home');
   const homeLabel = t('navigation.tabs.home', 'Home');
   const settingsTitle = t('navigation.tabs.settings', 'Settings');
   const profileTitle = t('profile.title', 'Profile');
@@ -288,6 +325,7 @@ export default function TabLayout() {
   const finishTitle = t('navigation.finish', 'Finish');
   const historyTitle = t('navigation.history', 'Recent bills');
   const historyDetailsTitle = t('navigation.historyDetails', 'Bill details');
+  const paymentsTitle = t('navigation.payments', 'Payments');
 
   return (
     <>
@@ -331,7 +369,6 @@ export default function TabLayout() {
         {/* Friends stack (hidden) */}
         <Tabs.Screen name="friends/index" options={{ href: null, title: t('friends.title', 'Friends') }} />
         <Tabs.Screen name="friends/search" options={{ href: null, title: t('friends.searchTab', 'Search') }} />
-        <Tabs.Screen name="friends/requests" options={{ href: null, title: t('friends.requests', 'Requests') }} />
 
         {/* HIDDEN: Groups */}
         <Tabs.Screen name="groups/index"   options={{ href: null, title: groupsTitle }} />
@@ -350,6 +387,7 @@ export default function TabLayout() {
         <Tabs.Screen name="sessions/finish" options={{ href: null, title: finishTitle }} />
         <Tabs.Screen name="sessions/history/index" options={{ href: null, title: historyTitle }} />
         <Tabs.Screen name="sessions/history/[historyId]" options={{ href: null, title: historyDetailsTitle }} />
+        <Tabs.Screen name="sessions/history/payments" options={{ href: null, title: paymentsTitle }} />
 
       </Tabs>
 
@@ -357,24 +395,38 @@ export default function TabLayout() {
       <Modal
         visible={createModalOpen}
         transparent
-        animationType="slide"
+        animationType="fade"
         onRequestClose={() => setCreateModalOpen(false)}
+        statusBarTranslucent
       >
         <Pressable
-          style={{ flex: 1, backgroundColor: 'transparent', justifyContent: 'flex-end' }}
+          style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.4)', justifyContent: 'flex-end' }}
           onPress={() => setCreateModalOpen(false)}
         >
           <Theme name={isDark ? 'dark' : 'light'}>
-            <Pressable
+            <Animated.View
               style={{
-                backgroundColor: isDark ? '#161616' : '#ffffff',
-                borderTopLeftRadius: 24,
-                borderTopRightRadius: 24,
-                padding: 24,
-                paddingBottom: insets.bottom > 0 ? insets.bottom + 16 : 24,
+                width: '100%',
+                transform: [{ translateY: slideAnim }],
               }}
-              onPress={(e) => e.stopPropagation()}
             >
+              <Pressable
+                style={{
+                  backgroundColor: isDark ? '#161616' : '#ffffff',
+                  borderTopLeftRadius: 24,
+                  borderTopRightRadius: 24,
+                  padding: 24,
+                  paddingBottom: insets.bottom > 0 ? insets.bottom + 16 : 24,
+                  borderWidth: 1,
+                  borderColor: 'rgba(128, 128, 128, 0.1)',
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: -4 },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 10,
+                  elevation: 16,
+                }}
+                onPress={(e) => e.stopPropagation()}
+              >
               <View width={40} height={4} borderRadius={2} backgroundColor="$gray6" alignSelf="center" marginBottom="$4" />
               
               <Text fontSize={18} fontWeight="700" color="$color" textAlign="center" marginBottom="$5">
@@ -439,9 +491,10 @@ export default function TabLayout() {
                 </Button>
               </YStack>
             </Pressable>
-          </Theme>
-        </Pressable>
-      </Modal>
+          </Animated.View>
+        </Theme>
+      </Pressable>
+    </Modal>
     </>
   );
 }

@@ -277,7 +277,8 @@
     "history": "最近の明細",
     "historyDetails": "明細の詳細",
     "manualReceipt": "手動入力",
-    "notifications": "通知"
+    "notifications": "通知",
+    "payments": "お支払い"
   },
   "notifications": {
     "title": "通知",

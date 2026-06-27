@@ -277,7 +277,8 @@
     "finish": "Finish",
     "history": "Recent bills",
     "historyDetails": "Bill details",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "payments": "Payments"
   },
   "notifications": {
     "title": "Notifications",

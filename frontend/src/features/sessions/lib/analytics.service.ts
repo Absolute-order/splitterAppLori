@@ -251,7 +251,7 @@ export function computeHomeStats(
 
   const lastActivity = activities
     .sort((a, b) => b.timestamp - a.timestamp)
-    .slice(0, 5)
+    .slice(0, 4)
     .map(({ type, targetName, date, amount }) => ({ type, targetName, date, amount }));
 
   return {

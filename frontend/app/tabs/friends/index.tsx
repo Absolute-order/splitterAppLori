@@ -1,13 +1,12 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { YStack, XStack, Paragraph, Input, ScrollView, Spinner, Separator, Text, Button } from 'tamagui';
 import { useRouter } from 'expo-router';
-import { Search, X, Users, Mail } from '@tamagui/lucide-icons';
+import { Search, X, Users } from '@tamagui/lucide-icons';
 import { useTranslation } from 'react-i18next';
 import { useFriendsStore } from '@/features/friends/model/friends.store';
 import { FriendListItem } from '@/features/friends/ui/FriendListItem';
 import { FriendRequestActions } from '@/features/friends/ui/FriendRequestActions';
 import UserAvatar from '@/shared/ui/UserAvatar';
-import Fab from '@/shared/ui/Fab';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 import { useAppStore } from '@/shared/lib/stores/app-store';
 
@@ -197,7 +196,7 @@ export default function FriendsScreen() {
 
         {error && <Paragraph col="$red10" p="$4">{error}</Paragraph>}
 
-        <ScrollView f={1} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
+        <ScrollView f={1} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 140 }}>
           
           {/* Section: Incoming Requests (only if empty search or matching query) */}
           {searchQuery.length < 2 && incoming.length > 0 && myUniqueId && (
@@ -381,12 +380,6 @@ export default function FriendsScreen() {
           )}
         </ScrollView>
       </YStack>
-
-      {/* FAB to view requests list (e.g. Outgoing requests history, pending requests) */}
-      <Fab
-        onPress={() => router.push('/tabs/friends/requests')}
-        icon={<Mail size={22} color="white" />}
-      />
     </YStack>
   );
 }

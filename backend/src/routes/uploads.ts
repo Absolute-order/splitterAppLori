@@ -2,7 +2,7 @@ import { Router } from "express";
 import type { Request, Response } from "express";
 import multer from "multer";
 import { authenticateToken } from "../middleware/auth.js";
-import { uploadAvatarObject } from "../config/r2.js";
+import { uploadAvatarObject, isR2Configured } from "../config/r2.js";
 import { prisma } from "../config/prisma.js";
 
 type UploadFile = {
@@ -130,16 +130,27 @@ router.post(
       const v = Math.floor(Date.now() / 1000);
       const key = `avatars/${req.user.id}/v${v}/avatar${ext}`;
 
-      const put = await uploadAvatarObject(key, buffer, mimetype);
+      let avatarUrl = "";
+      let resKey = "";
+
+      if (isR2Configured()) {
+        const put = await uploadAvatarObject(key, buffer, mimetype);
+        avatarUrl = put.url;
+        resKey = put.key;
+      } else {
+        // Fallback: save as Base64 Data URL in database directly
+        avatarUrl = `data:${mimetype};base64,${buffer.toString("base64")}`;
+        resKey = `local-base64-avatar`;
+      }
 
       // Persist URL to user
       await prisma.user.update({
         where: { id: req.user.id },
-        data: { avatarUrl: put.url },
+        data: { avatarUrl },
         select: { id: true },
       });
 
-      res.json({ success: true, avatarUrl: put.url, key: put.key });
+      res.json({ success: true, avatarUrl, key: resKey });
       return;
     } catch (err) {
       console.error("POST /uploads/avatar error:", err);

@@ -26,15 +26,24 @@ apiClient.interceptors.request.use(async (config) => {
     const token = await getToken();
     if (token) {
       const headers: any = config.headers ?? {};
+      const isFormData = config.data instanceof FormData;
       if (typeof headers.set === 'function') {
         headers.set('Authorization', `Bearer ${token}`);
-        headers.set('Content-Type', headers.get?.('Content-Type') ?? 'application/json');
+        if (isFormData) {
+          headers.delete('Content-Type');
+        } else {
+          headers.set('Content-Type', headers.get?.('Content-Type') ?? 'application/json');
+        }
       } else {
         config.headers = {
           ...headers,
           Authorization: `Bearer ${token}`,
-          'Content-Type': headers['Content-Type'] ?? 'application/json',
         };
+        if (isFormData) {
+          delete config.headers['Content-Type'];
+        } else {
+          config.headers['Content-Type'] = headers['Content-Type'] ?? 'application/json';
+        }
       }
     }
   } catch {
@@ -217,10 +226,27 @@ export interface UploadAvatarResponse {
 }
 
 export async function uploadAvatar(formData: FormData): Promise<UploadAvatarResponse> {
-  const { data } = await apiClient.post<UploadAvatarResponse>('/uploads/avatar', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
+  const token = await getToken();
+  const response = await fetch(`${API_URL}/uploads/avatar`, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      Accept: 'application/json',
+      Authorization: token ? `Bearer ${token}` : '',
+    },
   });
-  return data;
+
+  if (!response.ok) {
+    const text = await response.text();
+    let errMessage = 'Upload failed';
+    try {
+      const parsed = JSON.parse(text);
+      errMessage = parsed.error || parsed.message || errMessage;
+    } catch {}
+    throw new ApiError(errMessage, { status: response.status });
+  }
+
+  return response.json();
 }
 
 export interface UpdateAvatarPayload {

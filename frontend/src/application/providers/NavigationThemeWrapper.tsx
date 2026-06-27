@@ -1,10 +1,13 @@
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useEffect } from 'react'
 import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native'
 import { StatusBar } from 'expo-status-bar'
-import { useColorScheme } from 'react-native'
+import { useColorScheme, Platform } from 'react-native'
 import { useAppStore } from '@/shared/lib/stores/app-store'
+import * as NavigationBar from 'expo-navigation-bar'
+import * as SystemUI from 'expo-system-ui'
 
 const DARK_BG = '#121212'
+const LIGHT_BG = '#FFFFFF'
 
 const darkNavigationTheme = {
   ...DarkTheme,
@@ -24,8 +27,8 @@ const lightNavigationTheme = {
   colors: {
     ...DefaultTheme.colors,
     primary: '#2ECC71',
-    background: '#FFFFFF',
-    card: '#FFFFFF',
+    background: LIGHT_BG,
+    card: LIGHT_BG,
     border: '#E4E7EB',
     text: '#1A1A1A',
     notification: '#2ECC71',
@@ -44,6 +47,15 @@ function useIsDarkMode(): boolean {
 export function NavigationThemeWrapper({ children }: { children: ReactNode }) {
   const isDark = useIsDarkMode()
 
+  // Keep navigation bar in sync when user changes theme in settings.
+  // Edge-to-edge: use SystemUI for root background, NavigationBar for button style only.
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      SystemUI.setBackgroundColorAsync(isDark ? DARK_BG : LIGHT_BG)
+      NavigationBar.setButtonStyleAsync(isDark ? 'light' : 'dark')
+    }
+  }, [isDark])
+
   return (
     <ThemeProvider value={isDark ? darkNavigationTheme : lightNavigationTheme}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
@@ -51,3 +63,4 @@ export function NavigationThemeWrapper({ children }: { children: ReactNode }) {
     </ThemeProvider>
   )
 }
+

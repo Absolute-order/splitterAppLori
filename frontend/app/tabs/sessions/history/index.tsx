@@ -158,37 +158,12 @@ export default function SessionsHistoryScreen() {
     <YStack f={1} bg="$background" px="$4" pt="$4" position="relative">
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ alignItems: 'center', paddingBottom: 32, gap: 16 }}
+        contentContainerStyle={{ alignItems: 'center', paddingBottom: 140, gap: 16 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <YStack w={358} gap="$2" mb="$2">
-          <Text fontSize={24} fontWeight="700" color="$color">{t('history.title')}</Text>
-          <Text fontSize={12} color="$gray10">{t('history.subtitle')}</Text>
-          {history.length > 0 ? (
-            <Button
-              unstyled
-              mt="$2"
-              h={44}
-              borderRadius={10}
-              borderWidth={1}
-              borderColor="$primary"
-              bg="rgba(46,204,113,0.08)"
-              ai="center"
-              jc="center"
-              onPress={() => setExportOpen(true)}
-              pressStyle={{ opacity: 0.9 }}
-            >
-              <XStack ai="center" gap="$2">
-                <FileDown size={18} color="$primary" />
-                <Text fontSize={14} fontWeight="700" color="$primary">
-                  {t('history.export', 'Export file')}
-                </Text>
-              </XStack>
-            </Button>
-          ) : null}
-        </YStack>
+
 
         {loading && (
           <Text color="$gray10" fontSize={14}>

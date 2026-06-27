@@ -214,7 +214,7 @@ export default function NotificationsScreen() {
       const sessionId = Number(item.meta?.sessionId ?? 0);
       if (Number.isFinite(sessionId) && sessionId > 0) {
         router.push({
-          pathname: '/tabs/sessions/history/[historyId]',
+          pathname: '/tabs/sessions/history/payments',
           params: { historyId: String(sessionId) },
         });
         return;
@@ -242,19 +242,16 @@ export default function NotificationsScreen() {
         }
       >
         <YStack p="$4" gap="$3">
-          <XStack jc="space-between" ai="center">
-            <Text fontSize={20} fontWeight="700" color="$color">
-              {t('notifications.title', 'Notifications')}
-            </Text>
-            {unreadCount > 0 && (
+          {unreadCount > 0 && (
+            <XStack jc="flex-end" ai="center">
               <Button
                 title={t('notifications.markAllRead', 'Mark all read')}
                 variant="outline"
                 size="small"
                 onPress={markAllAsRead}
               />
-            )}
-          </XStack>
+            </XStack>
+          )}
 
           {!loading && notifications.length === 0 && (
             <YStack ai="center" jc="center" py="$8" gap="$2">
